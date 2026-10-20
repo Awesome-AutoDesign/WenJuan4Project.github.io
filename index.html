@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>办公空间平面图认知评价问卷</title>
+<style>
+  :root {
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --primary-light: #eef2ff;
+    --accent: #0ea5e9;
+    --text: #1e293b;
+    --text-soft: #64748b;
+    --border: #e2e8f0;
+    --bg: #f4f6fb;
+    --card: #ffffff;
+    --ok: #16a34a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+      "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== 顶部进度条 ===== */
+  #progress-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  #progress-inner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 12px 20px;
+  }
+  #progress-track {
+    flex: 1;
+    height: 8px;
+    background: #e5e9f2;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  #progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    border-radius: 999px;
+    transition: width .35s ease;
+  }
+  #progress-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary-dark);
+    white-space: nowrap;
+    min-width: 78px;
+    text-align: right;
+  }
+
+  /* ===== 主体 ===== */
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 28px 20px 80px;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+    color: #fff;
+    border-radius: 18px;
+    padding: 34px 34px 30px;
+    box-shadow: 0 12px 30px rgba(79,70,229,.25);
+    margin-bottom: 24px;
+  }
+  .hero .badge {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 1px;
+    background: rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.35);
+    padding: 3px 12px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: .5px;
+  }
+  .hero p.subtitle {
+    font-size: 14px;
+    opacity: .92;
+  }
+  .hero .intro {
+    margin-top: 16px;
+    font-size: 13.5px;
+    line-height: 1.8;
+    background: rgba(255,255,255,.12);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 26px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(15,23,42,.04);
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .section-num {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border-radius: 9px;
+    background: var(--primary-light);
+    color: var(--primary-dark);
+    font-weight: 700;
+    font-size: 15px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--text-soft);
+    margin: 4px 0 18px 42px;
+  }
+
+  /* ===== 题项 ===== */
+  .q {
+    padding: 18px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .q:last-child { border-bottom: none; }
+  .q-head {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .q-id {
+    flex-shrink: 0;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-soft);
+    background: #f1f5f9;
+    padding: 2px 8px;
+    border-radius: 6px;
+    height: fit-content;
+  }
+  .q-text {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .req {
+    color: #ef4444;
+    font-weight: 700;
+    margin-left: 4px;
+  }
+
+  .dim-banner {
+    margin: 18px 0 2px;
+    padding: 11px 14px;
+    background: #f8fafc;
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--primary-dark);
+  }
+  .dim-banner span.count {
+    float: right;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-soft);
+  }
+
+  /* Likert 按钮组 */
+  .likert {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .likert label {
+    position: relative;
+    cursor: pointer;
+  }
+  .likert input {
+    position: absolute;
+    opacity: 0;
+    width: 0; height: 0;
+  }
+  .likert .opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 6px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    background: #fafbfd;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--text-soft);
+    transition: all .15s ease;
+    user-select: none;
+  }
+  .likert .dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background: #fff;
+    transition: all .15s ease;
+  }
+  .likert input:hover + .opt {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary-dark);
+  }
+  .likert input:checked + .opt {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79,70,229,.3);
+  }
+  .likert input:checked + .opt .dot {
+    border-color: #fff;
+    background: #fff;
+    box-shadow: inset 0 0 0 4px var(--primary);
+  }
+
+  /* 基本信息单选 */
+  .radio-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .radio-row label {
+    cursor: pointer;
+  }
+  .radio-row input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .radio-row .chip {
+    display: inline-block;
+    padding: 8px 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    background: #fafbfd;
+    font-size: 13.5px;
+    color: var(--text-soft);
+    transition: all .15s ease;
+    user-select: none;
+  }
+  .radio-row input:hover + .chip {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary-dark);
+  }
+  .radio-row input:checked + .chip {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(79,70,229,.25);
+  }
+
+  /* ===== 提交区 ===== */
+  .submit-wrap {
+    position: sticky;
+    bottom: 0;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid var(--border);
+    padding: 14px 20px;
+  }
+  .submit-inner {
+    max-width: 880px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  #submit-btn {
+    flex: 1;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all .2s ease;
+    box-shadow: 0 6px 18px rgba(79,70,229,.3);
+  }
+  #submit-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(79,70,229,.4);
+  }
+  #submit-btn:disabled {
+    background: #cbd5e1;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  #hint {
+    font-size: 13px;
+    color: var(--text-soft);
+  }
+
+  /* ===== 完成弹层 ===== */
+  #done-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  #done-overlay.show { display: flex; }
+  #done-card {
+    background: #fff;
+    border-radius: 20px;
+    max-width: 460px;
+    width: 100%;
+    padding: 40px 36px;
+    text-align: center;
+    animation: pop .3s ease;
+  }
+  @keyframes pop {
+    from { transform: scale(.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  #done-card .check {
+    width: 68px; height: 68px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #dcfce7;
+    color: var(--ok);
+    font-size: 34px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #done-card h2 { font-size: 20px; margin-bottom: 10px; }
+  #done-card p { font-size: 14px; color: var(--text-soft); margin-bottom: 6px; }
+  #done-card .again {
+    margin-top: 22px;
+    padding: 10px 24px;
+    font-size: 14px;
+    color: var(--primary);
+    background: var(--primary-light);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+  #done-card .again:hover { background: #e0e7ff; }
+
+  @media (max-width: 640px) {
+    .likert { grid-template-columns: repeat(5, 1fr); gap: 5px; }
+    .likert .opt { font-size: 11px; padding: 8px 3px; }
+    .hero { padding: 24px 20px; }
+    .card { padding: 20px 16px; }
+    .section-desc { margin-left: 0; }
+    .dim-banner span.count { float: none; display: block; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 进度条 -->
+<div id="progress-wrap">
+  <div id="progress-inner">
+    <div id="progress-track"><div id="progress-bar"></div></div>
+    <span id="progress-text">0 / 28</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 头部 -->
+  <div class="hero">
+    <span class="badge">学术研究调查</span>
+    <h1>办公空间平面图认知评价问卷</h1>
+    <p class="subtitle">基于认知拟合理论的 SD 平面生成设计及评价研究</p>
+    <div class="intro">
+      欢迎参与本次调查。本研究旨在了解您对<b>人工智能生成办公空间平面图</b>的认知评价。
+      请结合您刚刚浏览的平面图，根据<b>真实感受</b>作答，所有选项均无对错之分。
+      本问卷采用匿名方式，数据仅用于学术研究，不会用于其他用途。填写约需 8 分钟，感谢您的参与！
+    </div>
+  </div>
+
+  <!-- 第一部分：基本信息 -->
+  <div class="card">
+    <div class="section-head">
+      <div class="section-num">1</div>
+      <div class="section-title">基本信息</div>
+    </div>
+    <div class="section-desc">以下信息仅用于统计分析，不会泄露您的个人身份。</div>
+
+    <div class="q">
+      <div class="q-head"><span class="q-id">D1</span><span class="q-text">您的性别<span class="req">*</span></span></div>
+      <div class="radio-row" data-required>
+        <label><input type="radio" name="d1" value="男"><span class="chip">男</span></label>
+        <label><input type="radio" name="d1" value="女"><span class="chip">女</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <div class="q-head"><span class="q-id">D2</span><span class="q-text">您的年级<span class="req">*</span></span></div>
+      <div class="radio-row" data-required>
+        <label><input type="radio" name="d2" value="本科三年级"><span class="chip">本科三年级</span></label>
+        <label><input type="radio" name="d2" value="本科四年级"><span class="chip">本科四年级</span></label>
+        <label><input type="radio" name="d2" value="硕士一年级"><span class="chip">硕士一年级</span></label>
+        <label><input type="radio" name="d2" value="硕士二年级"><span class="chip">硕士二年级</span></label>
+        <label><input type="radio" name="d2" value="其他"><span class="chip">其他</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <div class="q-head"><span class="q-id">D3</span><span class="q-text">您的专业背景<span class="req">*</span></span></div>
+      <div class="radio-row" data-required>
+        <label><input type="radio" name="d3" value="室内设计"><span class="chip">室内设计</span></label>
+        <label><input type="radio" name="d3" value="建筑设计"><span class="chip">建筑设计</span></label>
+        <label><input type="radio" name="d3" value="环境艺术设计"><span class="chip">环境艺术设计</span></label>
+        <label><input type="radio" name="d3" value="其他设计类"><span class="chip">其他设计类</span></label>
+        <label><input type="radio" name="d3" value="非设计类"><span class="chip">非设计类</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <div class="q-head"><span class="q-id">D4</span><span class="q-text">您是否使用过 AI 辅助设计工具（如 Midjourney、Stable Diffusion、DALL·E 等）<span class="req">*</span></span></div>
+      <div class="radio-row" data-required>
+        <label><input type="radio" name="d4" value="经常使用"><span class="chip">经常使用</span></label>
+        <label><input type="radio" name="d4" value="偶尔使用"><span class="chip">偶尔使用</span></label>
+        <label><input type="radio" name="d4" value="从未使用"><span class="chip">从未使用</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <div class="q-head"><span class="q-id">D5</span><span class="q-text">您是否有办公空间设计相关的课程或项目经验<span class="req">*</span></span></div>
+      <div class="radio-row" data-required>
+        <label><input type="radio" name="d5" value="有"><span class="chip">有</span></label>
+        <label><input type="radio" name="d5" value="无"><span class="chip">无</span></label>
+      </div>
+    </div>
+
+    <div class="q">
+      <div class="q-head"><span class="q-id">D6</span><span class="q-text">您是否学习过建筑制图、室内设计原理等相关专业课程<span class="req">*</span></span></div>
+      <div class="radio-row" data-required>
+        <label><input type="radio" name="d6" value="有"><span class="chip">有</span></label>
+        <label><input type="radio" name="d6" value="无"><span class="chip">无</span></label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 第二部分：评价量表 -->
+  <div class="card">
+    <div class="section-head">
+      <div class="section-num">2</div>
+      <div class="section-title">平面图评价量表</div>
+    </div>
+    <div class="section-desc">
+      请结合平面图，逐项选择最符合您感受的选项。选项从左至右依次为：
+      <b>完全不同意</b>、<b>不同意</b>、<b>一般</b>、<b>同意</b>、<b>完全同意</b>。
+    </div>
+
+    <!-- 维度一：功能合理性 -->
+    <div class="dim-banner">一、功能合理性<span class="count">共 6 题</span></div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">F1</span><span class="q-text">平面图的功能分区布局合理<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="f1"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">F2</span><span class="q-text">各功能区域之间的面积配比恰当<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="f2"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">F3</span><span class="q-text">图中各区域的相邻关系符合办公流程逻辑<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="f3"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">F4</span><span class="q-text">难以辨别图中不同的功能区域<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="f4"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">F5</span><span class="q-text">主要功能区域（工作区、协作区、辅助区等）的位置安排符合实际使用需求<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="f5"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">F6</span><span class="q-text">交通空间与使用空间之间的面积比例分配恰当<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="f6"></div>
+    </div>
+
+    <!-- 维度二：空间可读性 -->
+    <div class="dim-banner">二、空间可读性<span class="count">共 8 题</span></div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">R1</span><span class="q-text">我能轻松理解图中主要动线的走向<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="r1"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">R2</span><span class="q-text">图例和符号的含义清晰易懂<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="r2"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">R3</span><span class="q-text">阅读该平面图不需要额外的专业知识<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="r3"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">R4</span><span class="q-text">图中的标注和文字信息令人困惑<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="r4"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">R5</span><span class="q-text">我能快速定位入口、接待区等关键空间<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="r5"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">R6</span><span class="q-text">我能清楚区分主要通道与次要通道<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="r6"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">R7</span><span class="q-text">我能迅速判断会议室、茶水间等功能房间的相对位置<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="r7"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">R8</span><span class="q-text">我能把握整个空间的整体布局结构<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="r8"></div>
+    </div>
+
+    <!-- 维度三：视觉偏好 -->
+    <div class="dim-banner">三、视觉偏好<span class="count">共 5 题</span></div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">P1</span><span class="q-text">平面图的整体视觉效果令我满意<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="p1"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">P2</span><span class="q-text">这种风格的平面图符合我的审美期望<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="p2"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">P3</span><span class="q-text">我不喜欢该平面图的色彩搭配和表现方式<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="p3"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">P4</span><span class="q-text">平面图的色彩分区令人感到舒适<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="p4"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">P5</span><span class="q-text">平面图的图面表现专业且精致<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="p5"></div>
+    </div>
+
+    <!-- 维度四：认知负荷 -->
+    <div class="dim-banner">四、认知负荷<span class="count">共 3 题</span></div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">CL1</span><span class="q-text">完成判断任务需要投入很大的脑力努力<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="cl1"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">CL2</span><span class="q-text">我觉得任务的要求很高，完成起来有压力<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="cl2"></div>
+    </div>
+    <div class="q">
+      <div class="q-head"><span class="q-id">CL3</span><span class="q-text">在理解平面图布局时我感到困惑<span class="req">*</span></span></div>
+      <div class="likert" data-required data-group="cl3"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 提交栏 -->
+<div class="submit-wrap">
+  <div class="submit-inner">
+    <span id="hint">请完成全部题项后提交</span>
+    <button id="submit-btn" disabled>提交问卷</button>
+  </div>
+</div>
+
+<!-- 完成弹层 -->
+<div id="done-overlay">
+  <div id="done-card">
+    <div class="check">✓</div>
+    <h2>提交成功</h2>
+    <p>感谢您的参与！您的评价已成功提交。</p>
+    <p>本次调查结果仅用于学术研究，感谢您为本研究作出的贡献。</p>
+    <button class="again" onclick="location.reload()">再填一份</button>
+  </div>
+</div>
+
+<script>
+  // Likert 五级选项
+  const LEVELS = [
+    { v: 1, label: '完全不同意' },
+    { v: 2, label: '不同意' },
+    { v: 3, label: '一般' },
+    { v: 4, label: '同意' },
+    { v: 5, label: '完全同意' },
+  ];
+
+  // 渲染 Likert 按钮组
+  document.querySelectorAll('.likert').forEach(function (box) {
+    const group = box.dataset.group;
+    LEVELS.forEach(function (lvl) {
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      input.type = 'radio';
+      input.name = group;
+      input.value = lvl.v;
+      const opt = document.createElement('span');
+      opt.className = 'opt';
+      const dot = document.createElement('span');
+      dot.className = 'dot';
+      const txt = document.createElement('span');
+      txt.textContent = lvl.label;
+      opt.appendChild(dot);
+      opt.appendChild(txt);
+      label.appendChild(input);
+      label.appendChild(opt);
+      box.appendChild(label);
+    });
+  });
+
+  // 统计全部必填组
+  const allGroups = [];
+  document.querySelectorAll('[data-required]').forEach(function (el) {
+    if (el.classList.contains('likert')) {
+      allGroups.push(el.dataset.group);
+    } else {
+      el.querySelectorAll('input[type="radio"]').forEach(function (inp) {
+        if (allGroups.indexOf(inp.name) === -1) allGroups.push(inp.name);
+      });
+    }
+  });
+
+  const total = allGroups.length;
+  const progressBar = document.getElementById('progress-bar');
+  const progressText = document.getElementById('progress-text');
+  const submitBtn = document.getElementById('submit-btn');
+  const hint = document.getElementById('hint');
+
+  function updateProgress() {
+    let done = 0;
+    allGroups.forEach(function (name) {
+      if (document.querySelector('input[name="' + name + '"]:checked')) done++;
+    });
+    const pct = Math.round((done / total) * 100);
+    progressBar.style.width = pct + '%';
+    progressText.textContent = done + ' / ' + total;
+    if (done === total) {
+      submitBtn.disabled = false;
+      hint.textContent = '全部题项已完成，可以提交';
+    } else {
+      submitBtn.disabled = true;
+      hint.textContent = '请完成全部题项后提交（已答 ' + done + '/' + total + '）';
+    }
+  }
+
+  // 任意选择变化时更新进度
+  document.addEventListener('change', function (e) {
+    if (e.target.type === 'radio') updateProgress();
+  });
+
+  // 提交
+  submitBtn.addEventListener('click', function () {
+    let missing = [];
+    allGroups.forEach(function (name) {
+      if (!document.querySelector('input[name="' + name + '"]:checked')) missing.push(name);
+    });
+    if (missing.length > 0) {
+      const first = document.querySelector('input[name="' + missing[0] + '"]');
+      if (first) {
+        const card = first.closest('.q') || first.closest('.card');
+        if (card) card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+    document.getElementById('done-overlay').classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  updateProgress();
+</script>
+</body>
+</html>
